@@ -2,9 +2,10 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>AdsShop - Trang Bán Hàng Sever Mythoria</title>
+  <title>AdsShop - Xem quảng cáo và mua đồ</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <style>
+    /* ... giữ nguyên toàn bộ phần CSS của bạn ở đây ... */
     body { font-family: Arial, sans-serif; background: #f6f6f6; }
     .header { background: #ff5722; color: #fff; padding: 20px 0; text-align: center; }
     .balance { font-size: 20px; margin: 20px 0; color: #388e3c; }
@@ -30,6 +31,109 @@
     #orders-table th { background: #ffefcf; }
     #admin-section h2, #orders-section h2, #stock-section h2 { margin-top: 0; }
     #stock-list input[type=number] { width: 60px; }
+      .nav-btn {
+  background: #ffefcf;
+  color: #ff5722;
+  border: none;
+  padding: 9px 26px;
+  border-radius: 20px;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0 4px;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s;
+  box-shadow: 0 1px 3px rgba(255,87,34,0.07);
+}
+.nav-btn:hover, .nav-btn.active {
+  background: #ff5722;
+  color: #fff;
+}
+    /* Nhóm nút chọn danh mục sản phẩm */
+.product-filter-group {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Nút danh mục sản phẩm */
+.btn-category {
+  background: #fffbe7;
+  color: #ff9800;
+  border: 1.5px solid #ff9800;
+  border-radius: 18px;
+  font-weight: 600;
+  padding: 10px 34px;
+  font-size: 17px;
+  margin: 0 2px;
+  box-shadow: 0 2px 8px rgba(255,152,0,0.10);
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s, box-shadow 0.18s, transform 0.14s;
+  outline: none;
+  letter-spacing: 0.5px;
+}
+
+.btn-category:hover,
+.btn-category:focus {
+  background: linear-gradient(90deg, #ff9800 0%, #ff5722 100%);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(255,152,0,0.18);
+  transform: translateY(-2px) scale(1.04);
+  border-color: #ff9800;
+}
+
+.btn-category.active {
+  background: linear-gradient(90deg, #ff9800 0%, #ff5722 100%);
+  color: #fff;
+  border-color: #ff9800;
+  box-shadow: 0 4px 14px rgba(255,152,0,0.16);
+}
+    /* Nút Đăng ký và Đăng nhập */
+.btn-auth {
+  background: linear-gradient(90deg, #ff9800 0%, #ff5722 100%);
+  color: #fff;
+  border: none;
+  border-radius: 9px;
+  font-weight: bold;
+  font-size: 17px;
+  padding: 11px 36px;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(255,87,34,0.10);
+  transition: background 0.18s, box-shadow 0.18s, transform 0.14s;
+  margin: 8px 0 5px 0;
+  outline: none;
+  letter-spacing: 0.2px;
+}
+.btn-auth:hover, .btn-auth:focus {
+  background: linear-gradient(90deg, #ff5722 0%, #ff9800 100%);
+  box-shadow: 0 4px 18px rgba(255,152,0,0.18);
+  transform: translateY(-2px) scale(1.04);
+}
+
+/* Nút Đăng xuất */
+.btn-logout {
+  background: #fff;
+  color: #ff9800;
+  border: 2px solid #ff9800;
+  border-radius: 9px;
+  font-weight: bold;
+  font-size: 17px;
+  padding: 9px 32px;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(255,152,0,0.09);
+  transition: background 0.18s, color 0.18s, box-shadow 0.18s, transform 0.14s;
+  margin: 8px 0 5px 16px;
+  outline: none;
+  letter-spacing: 0.2px;
+}
+.btn-logout:hover, .btn-logout:focus {
+  background: #ff9800;
+  color: #fff;
+  box-shadow: 0 4px 18px rgba(255,152,0,0.18);
+  transform: translateY(-2px) scale(1.04);
+  border-color: #ff9800;
+}
   </style>
 </head>
 <body>
@@ -40,7 +144,7 @@
     <h2 style="color:#ff9800;text-align:center;margin-top:0;">Thể lệ & Hướng dẫn sử dụng</h2>
     <div id="rules-content" style="color:#444;font-size:16px;">
       <ul style="padding-left:18px;line-height:1.7;">
-        <li>Sau khi tạo tài khoản, tài khoản phải chờ duyệt trong khoảng 1 ngày mới được cấp link để xem quảng cáo (nút xem quảng cáo sẽ tự động hiển thị sau khi duyệt).</li>
+        <li>Sau khi tạo tài khoản, tài khoản phải chờ duyệt trong khoảng 1 ngày mới được cấp link để xem quảng cáo.</li>
         <li>Mỗi lần bấm vào xem quảng cáo và load hết trang sẽ được tính là 1 xu.</li>
         <li>Xu sẽ được duyệt trong khoảng 1 ngày.</li>
         <li>Sau khi đặt hàng, chờ hàng được giao trực tiếp trong game.</li>
@@ -53,10 +157,10 @@
   </div>
 </div>
   <div class="header">
-    <h1>AdsShop - Mua sắm bằng Xu sever Mythoria</h1>
+    <h1>AdsShop - Xem quảng cáo và mua sắm</h1>
     <div id="user-section" style="display:none;">
       Xin chào <span id="username-display"></span> | Số dư: <span class="balance" id="balance"></span> Xu
-      <button onclick="logout()" style="margin-left:20px;">Đăng xuất</button>
+      <button class="btn-logout" onclick="logout()">Đăng xuất</button>
     </div>
   </div>
   <div style="width:100%; background: #388e3c; text-align:center; padding: 12px 0;">
@@ -66,13 +170,18 @@
       style="display:none; background:#fff; color:#388e3c; font-weight:bold; font-size:18px; padding:10px 30px; border-radius:6px; text-decoration:none; box-shadow:0 2px 6px rgba(0,0,0,0.09); transition:background 0.2s;">
       🔗 Xem quảng cáo và nhận xu
     </a>
+    <div id="main-navbar" style="display:none; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,0.05); border-radius:8px; width:1000px; margin:16px auto 0 auto; display:flex; justify-content:center; gap:24px; padding:10px 0;">
+  <button class="nav-btn" id="shop-nav-btn" onclick="showSection('shop')">🛒 Mua hàng</button>
+  <button class="nav-btn" id="game-nav-btn" onclick="showSection('game')">🎮 Game</button>
+  <button class="nav-btn" id="admin-nav-btn" style="display:none;" onclick="showSection('admin')">🛠️ Admin</button>
+</div>
   </div>
   <div class="container">
     <div id="login-section" style="display:none;">
       <h2>Đăng nhập</h2>
       <input type="text" id="username" placeholder="Tên Minecraft" required>
       <input type="password" id="password" placeholder="Mật khẩu" required>
-      <button onclick="login()">Đăng nhập</button>
+     <button class="btn-auth" onclick="login()">Đăng nhập</button>
       <div style="margin-top:10px;">Chưa có tài khoản? <a href="#" onclick="showRegister();return false;">Đăng ký</a></div>
       <div class="msg" id="login-msg"></div>
     </div>
@@ -80,12 +189,19 @@
       <h2>Đăng ký</h2>
       <input type="text" id="reg-username" placeholder="Tên Minecraft" required>
       <input type="password" id="reg-password" placeholder="Mật khẩu" required>
-      <button onclick="register()">Đăng ký</button>
+      <button class="btn-auth" onclick="register()">Đăng ký</button>
       <div style="margin-top:10px;">Đã có tài khoản? <a href="#" onclick="showLogin();return false;">Đăng nhập</a></div>
       <div class="msg" id="register-msg"></div>
     </div>
     <div id="shop-section" style="display:none;">
       <h2>Sản phẩm nổi bật</h2>
+      <div id="category-filter" style="margin-bottom:20px; text-align:center;">
+  <button class="btn-category active" onclick="filterCategory('all', this)">Tất cả</button>
+  <button class="btn-category" onclick="filterCategory('thuc-an', this)">Thức ăn</button>
+  <button class="btn-category" onclick="filterCategory('trang-bi', this)">Trang bị</button>
+  <button class="btn-category" onclick="filterCategory('vat-pham', this)">Vật phẩm</button>
+  <!-- Thêm nút cho các danh mục khác nếu muốn -->
+</div>
       <div class="products" id="products-list"></div>
       <div class="cart">
         <h2>Giỏ hàng</h2>
@@ -243,27 +359,31 @@
     }
 
     async function renderProducts() {
-      await fetchProducts();
-      const list = document.getElementById('products-list');
-      list.innerHTML = '';
-      products.forEach(p => {
-        let stockText = p.stock > 0
-          ? `<span class="product-stock">Còn lại: ${p.stock}</span>`
-          : `<span class="out-of-stock">Hết hàng</span>`;
-        let btnDisabled = p.stock <= 0 ? 'disabled' : '';
-        list.innerHTML += `
-          <div class="product">
-            <img src="${p.image}" alt="${p.name}">
-            <div class="product-title">${p.name}</div>
-            <div class="product-price">${p.price} Xu</div>
-            ${stockText}
-            <div style="font-size:13px; color:#666;margin-bottom:6px">${p.description}</div>
-           <button class="add-cart-btn" onclick="addToCart('${p.id}')" ${btnDisabled}>${p.stock > 0 ? 'Thêm vào giỏ' : 'Hết hàng'}</button>
-          </div>
-        `;
-      });
-    }
+  await fetchProducts();
+  const list = document.getElementById('products-list');
+  list.innerHTML = '';
+  // Lọc sản phẩm theo category nếu không phải "all"
+  let filtered = selectedCategory === 'all'
+    ? products
+    : products.filter(p => (p.category || 'all') === selectedCategory);
 
+  filtered.forEach(p => {
+    let stockText = p.stock > 0
+      ? `<span class="product-stock">Còn lại: ${p.stock}</span>`
+      : `<span class="out-of-stock">Hết hàng</span>`;
+    let btnDisabled = p.stock <= 0 ? 'disabled' : '';
+    list.innerHTML += `
+      <div class="product">
+        <img src="${p.image}" alt="${p.name}">
+        <div class="product-title">${p.name}</div>
+        <div class="product-price">${p.price} Xu</div>
+        ${stockText}
+        <div style="font-size:13px; color:#666;margin-bottom:6px">${p.description}</div>
+        <button class="add-cart-btn" onclick="addToCart('${p.id}')" ${btnDisabled}>${p.stock > 0 ? 'Thêm vào giỏ' : 'Hết hàng'}</button>
+      </div>
+    `;
+  });
+}
     // Giỏ hàng (tạm thời lưu sessionStorage theo user)
     function getCart() {
       const user = getCurrentUser();
@@ -470,7 +590,7 @@
       let input = document.getElementById('stock-input-' + pid);
       let value = parseInt(input.value);
       if (isNaN(value) || value < 0) value = 0;
-      await supabase.from('products').update({ stock: value }).eq('id', pid);
+await supabase.from('products').update({ stock: value }).eq('id', Number(pid));
       document.getElementById('stock-now-' + pid).textContent = value;
       document.getElementById('stock-msg').textContent = "Đã cập nhật tồn kho!";
       renderProducts();
@@ -565,21 +685,35 @@
 async function loadAll() {
   let user = getCurrentUser();
   if (!user) {
+    // Ẩn các phần khi chưa đăng nhập
     document.getElementById('shop-section').style.display = 'none';
     document.getElementById('user-section').style.display = 'none';
     document.getElementById('login-section').style.display = 'block';
     document.getElementById('admin-section').style.display = 'none';
     document.getElementById('stock-section').style.display = 'none';
     document.getElementById('orders-section').style.display = 'none';
+    document.getElementById('speciallink-section').style.display = 'none';
+    document.getElementById('double-section').style.display = 'none';
+    document.getElementById('stats-section') && (document.getElementById('stats-section').style.display = 'none');
+    document.getElementById('main-navbar').style.display = 'none';
     renderSpecialLinkBtn();
-    document.getElementById('double-section').style.display = 'none'; // <-- THÊM DÒNG NÀY!
     return;
   }
+  // Đã đăng nhập, hiển thị các phần phù hợp
   document.getElementById('login-section').style.display = 'none';
   document.getElementById('register-section').style.display = 'none';
   document.getElementById('shop-section').style.display = 'block';
   document.getElementById('user-section').style.display = 'block';
-  document.getElementById('double-section').style.display = 'block'; // <-- THÊM DÒNG NÀY!
+  document.getElementById('double-section').style.display = 'block';
+  document.getElementById('main-navbar').style.display = 'flex';
+
+  // Phân quyền hiển thị admin
+  if (user.username === 'admin') {
+    document.getElementById('admin-nav-btn').style.display = '';
+  } else {
+    document.getElementById('admin-nav-btn').style.display = 'none';
+  }
+
   await renderBalance();
   await renderProducts();
   renderCart();
@@ -587,12 +721,18 @@ async function loadAll() {
   await renderStockSection();
   await renderOrdersSection();
   await renderSpecialLinkBtn();
+  typeof renderStatsSection === "function" && await renderStatsSection();
   initDoubleCasino();
+
+  // Xử lý modal thể lệ
   if (sessionStorage.getItem('showRulesModal') === '1' && !sessionStorage.getItem('rulesModalSeen')) {
     showRulesModal();
     sessionStorage.removeItem('showRulesModal');
   }
   sessionStorage.removeItem('rulesModalSeen');
+
+  // Khi đăng nhập xong, mặc định hiển thị shop
+  showSection('shop');
 }
     loadAll();
 
@@ -741,6 +881,49 @@ function playRandomBgMusic() {
 
 // Gọi khi load site
 playRandomBgMusic();
+    let selectedCategory = 'all';
+
+function filterCategory(cat) {
+  selectedCategory = cat;
+  renderProducts();
+}
+    function showSection(section) {
+  // Ẩn hết mọi section liên quan
+  document.getElementById('shop-section').style.display = 'none';
+  document.getElementById('cart-table').parentElement.parentElement.style.display = 'none';
+  document.getElementById('double-section').style.display = 'none';
+  document.getElementById('admin-section').style.display = 'none';
+  document.getElementById('stock-section').style.display = 'none';
+  document.getElementById('orders-section').style.display = 'none';
+  document.getElementById('stats-section') && (document.getElementById('stats-section').style.display = 'none');
+  document.getElementById('speciallink-section').style.display = 'none';
+
+  // Reset active
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+
+  switch(section) {
+    case 'shop':
+      document.getElementById('shop-section').style.display = 'block';
+      document.getElementById('shop-nav-btn').classList.add('active');
+      break;
+    case 'pay':
+      document.getElementById('cart-table').parentElement.parentElement.style.display = 'block';
+      document.getElementById('pay-nav-btn').classList.add('active');
+      break;
+    case 'game':
+      document.getElementById('double-section').style.display = 'block';
+      document.getElementById('game-nav-btn').classList.add('active');
+      break;
+    case 'admin':
+      document.getElementById('admin-section').style.display = 'block';
+      document.getElementById('stock-section').style.display = 'block';
+      document.getElementById('orders-section').style.display = 'block';
+      document.getElementById('speciallink-section').style.display = 'block';
+      document.getElementById('stats-section') && (document.getElementById('stats-section').style.display = 'block');
+      document.getElementById('admin-nav-btn').classList.add('active');
+      break;
+  }
+}
   </script>
 </body>
 </html>
