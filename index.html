@@ -312,6 +312,7 @@
     const supabaseUrl = 'https://ibylievcmlzzyzkihzfo.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlieWxpZXZjbWx6enl6a2loemZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk3OTQ4OTYsImV4cCI6MjA2NTM3MDg5Nn0.iJNGvjly4q5M43Xd5uJ8A0OZT7PSrbQWcuhas9WWEiM';
     const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+    const webhookRegister = "https://discord.com/api/webhooks/1386604440223744081/3E4_WjDZ5rknfXLtKyt3W9BqTWJ01znjLLgI2FQasAt1vEieSQ9CEQOD8lslxJjHvNCA";
 
     // Quản lý trạng thái user
     function getCurrentUser() {
@@ -341,6 +342,18 @@
         msg.textContent = "Tên đăng nhập đã tồn tại!";
         return;
       }
+      // ✅ Gửi webhook Discord
+    try {
+      await fetch(webhookRegister, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          content: `🆕 **${username}** vừa đăng ký lúc ${new Date().toLocaleString()}`
+        })
+      });
+    } catch (err) {
+      console.warn("Không gửi được Discord webhook:", err);
+    }
       let { error } = await supabase.from('users').insert([{ username, password, balance: 0 }]);
       if (error) msg.textContent = "Lỗi: " + error.message;
       else {
@@ -1021,16 +1034,7 @@ async function submitReview() {
   setTimeout(()=>{msg.textContent='';msg.style.color='#d32f2f';},2000);
   renderReviewSection();
 }
-  // 🟢 Gửi webhook Discord
-  await fetch("https://discord.com/api/webhooks/1386604440223744081/3E4_WjDZ5rknfXLtKyt3W9BqTWJ01znjLLgI2FQasAt1vEieSQ9CEQOD8lslxJjHvNCA", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      content: `🆕 Người dùng mới đăng ký: **${username}**`
-    })
-  });
 
-  alert("Đăng ký thành công!");
 }
   const webhookClick = "https://discord.com/api/webhooks/1386604729471209532/YQrGuHeg9167p9c3euyAEC-FzC0853z8S66joVuhDtYeuCyY_KK1XcCmkrbTfGRMOCeF"; // Webhook Xem quảng cáo
 
